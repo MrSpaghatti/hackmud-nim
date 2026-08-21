@@ -1,0 +1,6 @@
+/bin/
+/nimcache/
+/.nimble/
+workspace/hacks/
+*.exe
+*.out
