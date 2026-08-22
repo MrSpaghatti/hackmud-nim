@@ -2,5 +2,8 @@
 /nimcache/
 /.nimble/
 workspace/hacks/
+/src/demo_harness
+/src/demo_nodes
+/src/demo_timeout
 *.exe
 *.out
