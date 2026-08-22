@@ -15,9 +15,9 @@
 import std/[json, sequtils, tables]
 
 type
-  Test = object
-    args: seq[string]   ## per-param literal code
-    want: string        ## expected-result literal code
+  Test* = object
+    args*: seq[string]   ## per-param literal code
+    want*: string        ## expected-result literal code
 
   Node* = object
     id*: string          # e.g. "saw-01"
@@ -49,9 +49,9 @@ const NODE_DEFS* = @[
   ## Return s verbatim.
   s""",
     tests: @[
-      t(@["\"ping\""], "\"ping\""),
-      t(@["\"\""], "\"\""),
-      t(@["\"hackmud\""], "\"hackmud\""),
+      t(@["\"ping\""], "ping"),
+      t(@["\"\""], ""),
+      t(@["\"hackmud\""], "hackmud"),
     ]),
 
   Node(
@@ -64,10 +64,10 @@ const NODE_DEFS* = @[
   ## Return rev(s). You may add any std import.
   s""",
     tests: @[
-      t(@["\"abc\""], "\"cba\""),
-      t(@["\"hello world\""], "\"dlrow olleh\""),
-      t(@["\"racecar\""], "\"racecar\""),
-      t(@["\"A\""], "\"A\""),
+      t(@["\"abc\""], "cba"),
+      t(@["\"hello world\""], "dlrow olleh"),
+      t(@["\"racecar\""], "racecar"),
+      t(@["\"A\""], "A"),
     ]),
 
   Node(
@@ -89,6 +89,7 @@ const NODE_DEFS* = @[
     id: "max-03", region: "cortex",
     diff: 2, reward: 75,
     name: "peak seeker",
+    help: "Return the maximum of a non-empty list of ints.",
     decl: "proc solve(xs: seq[int]): int",
     stub: """proc solve(xs: seq[int]): int =
   ## Return the maximum element. xs is never empty.
@@ -104,6 +105,7 @@ const NODE_DEFS* = @[
     id: "fib-01", region: "limbic",
     diff: 3, reward: 150,
     name: "fibonacci flame",
+    help: "Return fib(n); fib(0)=0, fib(1)=1.",
     decl: "proc solve(n: int): int",
     stub: """proc solve(n: int): int =
   ## Return fib(n). fib(0)=0, fib(1)=1.
@@ -119,23 +121,25 @@ const NODE_DEFS* = @[
     id: "crypt-01", region: "lattice",
     diff: 3, reward: 150,
     name: "caesar relay",
+    help: "Caesar cipher `plain` right by `shift` over a..z (wraps), pass others through.",
     decl: "proc solve(plain: string, shift: int): string",
     stub: """proc solve(plain: string, shift: int): string =
   ## Caesar cipher over lowercase a..z, shift right by `shift` (wraps).
   ## Only lowercase letters transform; everything else passes through.
   plain""",
     tests: @[
-      t(@["\"abc\"", "1"], "\"bcd\""),
-      t(@["\"xyz\"", "1"], "\"yza\""),
-      t(@["\"hello world\"", "3"], "\"khoor zruog\""),
-      t(@["\"abc\"", "0"], "\"abc\""),
-      t(@["\"ABC\"", "1"], "\"ABC\""),
+      t(@["\"abc\"", "1"], "bcd"),
+      t(@["\"xyz\"", "1"], "yza"),
+      t(@["\"hello world\"", "3"], "khoor zruog"),
+      t(@["\"abc\"", "0"], "abc"),
+      t(@["\"ABC\"", "1"], "ABC"),
     ]),
 
   Node(
     id: "prime-01", region: "lattice",
     diff: 3, reward: 200,
     name: "prime probe",
+    help: "Return whether n is prime (n >= 1).",
     decl: "proc solve(n: int): bool",
     stub: """proc solve(n: int): bool =
   ## Return true if n is prime. n >= 1.
@@ -152,6 +156,7 @@ const NODE_DEFS* = @[
     id: "lock-01", region: "lattice",
     diff: 4, reward: 350,
     name: "dedup firewall",
+    help: "Return src with duplicates removed, first-occurrence order preserved.",
     decl: "proc solve(src: seq[int]): seq[int]",
     stub: """proc solve(src: seq[int]): seq[int] =
   ## Return src with duplicates removed, order preserved
@@ -177,9 +182,22 @@ proc initRegistry* =
     byId[n.id] = n
     order.add n.id
 
-proc node*(id: string): Node = byId[id]
-proc has*(id: string): bool = id in byId
-proc allIds*: seq[string] = order
+proc ensureInit =
+  ## Idempotent lazy init; safe to call from any accessor.
+  if order.len == 0 and NODE_DEFS.len > 0:
+    initRegistry()
+
+proc node*(id: string): Node =
+  ensureInit()
+  byId[id]
+
+proc has*(id: string): bool =
+  ensureInit()
+  id in byId
+
+proc allIds*: seq[string] =
+  ensureInit()
+  order
 
 ## ------------------------------------------------------------------ JSON ---
 proc nodeToJson*(n: Node): JsonNode =

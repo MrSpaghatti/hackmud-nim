@@ -19,9 +19,20 @@ nimble build
 ## Roadmap
 
 - [x] challenge registry (8 nodes)
-- [ ] harness: compile + hidden tests (+timeout sandbox)
-- [ ] game shell: connect/write/run/credits/net map
-- [ ] state persistence
+- [x] harness: compile + hidden tests (+timeout sandbox)
+- [x] game shell: connect/write/run/credits/net map
+- [x] state persistence
+
+## Verify
+
+```bash
+# harness RED-GREEN (seed-01 echo: correct vs wrong)
+nim c -r --skipParentCfg --skipUserCfg src/demo_harness.nim
+# all 7 non-trivial nodes via harness
+nim c -r --skipParentCfg --skipUserCfg src/demo_nodes.nim
+# timeout guard (infinite loop → TIME OUT, no hang)
+nim c -r --skipParentCfg --skipUserCfg src/demo_timeout.nim
+```
 
 ## Notes
 
