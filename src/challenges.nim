@@ -168,6 +168,72 @@ const NODE_DEFS* = @[
       t(@["@[3,1,2,1]"], "@[3, 1, 2]"),
       t(@["@[]"], "@[]"),
     ]),
+
+  Node(
+    id: "count-01", region: "cortex",
+    diff: 2, reward: 80,
+    name: "count chars",
+    help: "count occurrences of char c in string s.",
+    decl: "proc solve(s: string, c: char): int",
+    stub: """proc solve(s: string, c: char): int =
+  ## count occurrences of char c in string s.
+  0""",
+    tests: @[
+      t(@["\"hello\"", "'l'"], "2"),
+      t(@["\"abc\"", "'z'"], "0"),
+      t(@["\"\"", "'a'"], "0"),
+      t(@["\"aaa\"", "'a'"], "3"),
+    ]),
+
+  Node(
+    id: "sumlist-01", region: "cortex",
+    diff: 2, reward: 90,
+    name: "sum list",
+    help: "sum of the list (empty = 0).",
+    decl: "proc solve(xs: seq[int]): int",
+    stub: """proc solve(xs: seq[int]): int =
+  ## sum of the list (empty = 0).
+  0""",
+    tests: @[
+      t(@["@[1, 2, 3]"], "6"),
+      t(@["@[]"], "0"),
+      t(@["@[-1, 1]"], "0"),
+      t(@["@[5, 5, 5]"], "15"),
+    ]),
+
+  Node(
+    id: "anagram-01", region: "limbic",
+    diff: 3, reward: 180,
+    name: "anagram",
+    help: "true if a and b are anagrams (case-sensitive, ignore nothing).",
+    decl: "proc solve(a, b: string): bool",
+    stub: """proc solve(a, b: string): bool =
+  ## true if a and b are anagrams (case-sensitive, ignore nothing).
+  false""",
+    tests: @[
+      t(@["\"listen\"", "\"silent\""], "true"),
+      t(@["\"hello\"", "\"world\""], "false"),
+      t(@["\"\"", "\"\""], "true"),
+      t(@["\"a\"", "\"a\""], "true"),
+      t(@["\"a\"", "\"b\""], "false"),
+      t(@["\"Abc\"", "\"cba\""], "false"),
+    ]),
+
+  Node(
+    id: "collatz-01", region: "limbic",
+    diff: 3, reward: 220,
+    name: "collatz",
+    help: "number of steps to reach 1 (n >= 1; collatz(1)=0).",
+    decl: "proc solve(n: int): int",
+    stub: """proc solve(n: int): int =
+  ## number of steps to reach 1 (n >= 1; collatz(1)=0).
+  0""",
+    tests: @[
+      t(@["1"], "0"),
+      t(@["2"], "1"),
+      t(@["3"], "7"),
+      t(@["12"], "9"),
+    ]),
 ]
 
 ## ----------------------------------------------------------------- lookups --
